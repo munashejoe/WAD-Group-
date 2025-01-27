@@ -45,7 +45,7 @@ let users = [];
 // Registration endpoint
 app.post('/api/register', 
   registrationLimiter,
-  [
+[
     body('email')
       .isEmail().withMessage('Invalid email format')
       .normalizeEmail(),
@@ -56,6 +56,8 @@ app.post('/api/register',
       .matches(/[a-z]/).withMessage('Password must contain a lowercase letter')
       .matches(/[!@#$%^&*(),.?":{}|<>]/).withMessage('Password must contain a special character')
   ],
+
+
   async (req, res) => {
     try {
       const errors = validationResult(req);
