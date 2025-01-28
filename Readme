@@ -1,0 +1,124 @@
+Mongodb start
+
+brew services start mongodb/brew/mongodb-community@6.0
+
+Testing Your API with Postman
+
+Set the request type to POST using the dropdown next to the URL input.
+
+Enter your API endpoint: http://localhost:3000/api/register.
+
+Go to the Body tab and select:
+raw (radio button).
+Choose JSON from the dropdown.
+Add the JSON payload for registration:
+json
+
+{
+  "email": "test@example.com",
+  "password": "StrongP@ssword123"
+}
+
+Click Send to test the request.
+Check the response section for feedback (e.g., "User registered successfully!" or errors).
+
+API Endpoint Tests
+1. Valid Login (Correct Credentials)
+bash
+Copy
+curl -X POST http://localhost:3000/api/login \
+    -H "Content-Type: application/json" \
+    -d '{"email": "test@example.com", "password": "StrongP@ssword123"}'
+Expected Response: Success message with a token.
+
+2. Invalid Credentials (Incorrect Password)
+bash
+Copy
+curl -X POST http://localhost:3000/api/login \
+    -H "Content-Type: application/json" \
+    -d '{"email": "test@example.com", "password": "WrongPassword123"}'
+Expected Response: {"error":"Invalid credentials"}.
+
+3. SQL Injection Attempt
+bash
+Copy
+curl -X POST http://localhost:3000/api/login \
+    -H "Content-Type: application/json" \
+    -d "{\"email\": \"test@example.com\", \"password\": \"' OR 1=1 --\"}"
+Expected Response:
+{"error":"Too many login attempts. Try again later."} or blocked attempt message.
+
+4. SQL Injection with Proper Escape
+bash
+Copy
+curl -X POST http://localhost:3000/api/login \
+    -H "Content-Type: application/json" \
+    -d "{\"email\": \"test@example.com\", \"password\": \"' OR 1=1 --\"}"
+Expected Response: Similar to Test 3 (rate-limited/blocked).
+
+5. Brute Force Test (Multiple Invalid Attempts)
+Run this command 5 times rapidly to trigger rate limiting:
+
+bash
+Copy
+curl -X POST http://localhost:3000/api/login \
+    -H "Content-Type: application/json" \
+    -d '{"email": "test@example.com", "password": "WrongPassword123"}'
+Expected Response: After multiple attempts:
+{"error":"Too many login attempts. Try again later."}.
+
+6. Empty Field Validation
+Test Empty Email:
+
+bash
+Copy
+curl -X POST http://localhost:3000/api/login \
+    -H "Content-Type: application/json" \
+    -d '{"email": "", "password": "StrongP@ssword123"}'
+Expected Response: Validation error for missing email.
+
+Test Empty Password:
+
+bash
+Copy
+curl -X POST http://localhost:3000/api/login \
+    -H "Content-Type: application/json" \
+    -d '{"email": "test@example.com", "password": ""}'
+Expected Response: Validation error for missing password.
+
+7. Cross-Site Scripting (XSS) Test
+bash
+Copy
+curl -X POST http://localhost:3000/api/login \
+    -H "Content-Type: application/json" \
+    -d '{"email": "<script>alert(1)</script>", "password": "StrongP@ssword123"}'
+Expected Response: Input sanitized; no script execution.
+
+8. Rate Limiting Under Flood
+Repeat this command rapidly:
+
+bash
+Copy
+curl -X POST http://localhost:3000/api/login \
+    -H "Content-Type: application/json" \
+    -d '{"email": "test@example.com", "password": "WrongPassword123"}'
+Expected Response:
+{"error":"Too many login attempts. Try again later."}.
+
+9. Security Headers Check
+bash
+Copy
+curl -I http://localhost:3000/api/login
+Expected Headers:
+
+Copy
+X-Content-Type-Options: nosniff
+X-Frame-Options: DENY
+Content-Security-Policy: default-src 'self'
+10. Invalid Content-Type Handling
+bash
+Copy
+curl -X POST http://localhost:3000/api/login \
+    -H "Content-Type: application/xml" \
+    -d '{"email": "test@example.com", "password": "StrongP@ssword123"}'
+Expected Response: 400 Bad Request (invalid content type).
