@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="script.js"></script>
+
+    <title>Secure Access Portal</title>
+    <style>
+        :root {
+            --deep-night: #181918;
+            --mist-silver: #ced0d0;
+            --urban-gray: #6d7171;
+            --abyssal-teal: #2c4245;
+            --slate-green: #4b5f5e;
+            --forest-floor: #414b48;
+            --twilight-blue: #3a515c;
+            --sage-brush: #82988a;
+            --midnight-ocean: #23313c;
+            --foggy-slate: #818b94;
+            --background: #f8f8f8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background-color: var(--background);
+            color: var(--deep-night);
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            padding: 2rem;
+            line-height: 1.6;
+        }
+
+        .auth-container {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 8px 24px rgba(24, 25, 24, 0.05);
+            width: 100%;
+            max-width: 440px;
+            border: 1px solid var(--mist-silver);
+        }
+
+        .auth-header {
+            margin-bottom: 2.5rem;
+            text-align: center;
+        }
+
+        .auth-title {
+            font-size: 1.75rem;
+            font-weight: 650;
+            color: var(--midnight-ocean);
+            margin-bottom: 0.75rem;
+            letter-spacing: -0.015em;
+        }
+
+        .auth-subtitle {
+            color: var(--urban-gray);
+            font-size: 0.95rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.75rem;
+            position: relative;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 1rem;
+            border: 1px solid var(--foggy-slate);
+            border-radius: 0.5rem;
+            background: rgba(206, 208, 208, 0.1);
+            color: var(--deep-night);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 0.95rem;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--abyssal-teal);
+            box-shadow: 0 0 0 3px rgba(44, 66, 69, 0.1);
+            background: white;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 1rem;
+            background-color: var(--deep-night);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 
+                background-color 0.25s ease,
+                transform 0.1s ease;
+        }
+
+        .submit-btn:hover {
+            background-color: var(--twilight-blue);
+            transform: translateY(-1px);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .submit-btn:disabled {
+            background-color: var(--foggy-slate);
+            cursor: not-allowed;
+        }
+
+        .password-helper {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+            font-size: 0.875rem;
+        }
+
+        .helper-link {
+            color: var(--slate-green);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .helper-link:hover {
+            color: var(--abyssal-teal);
+        }
+
+        .success-message {
+            display: none;
+            background: var(--sage-brush);
+            color: var(--deep-night);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-top: 1.5rem;
+            text-align: center;
+        }
+    </style>
+    
+</head>
+<body>
+    <main class="auth-container">
+        <header class="auth-header">
+            <h1 class="auth-title">Enterprise Portal</h1>
+            <p class="auth-subtitle">Secure system access for authorized users</p>
+        </header>
+
+        <form id="loginForm" class="auth-form" autocomplete="off">
+            <div class="form-group">
+                <input 
+                    type="email" 
+                    id="email" 
+                    class="form-input" 
+                    placeholder="Corporate email" 
+                    required
+                    autocomplete="email"
+                >
+            </div>
+            
+            <div class="form-group">
+                <input 
+                    type="password" 
+                    id="password" 
+                    class="form-input" 
+                    placeholder="Password" 
+                    required
+                    autocomplete="current-password"
+                >
+                <div class="password-helper">
+                    <a href="#" class="helper-link">Forgot password?</a>
+                    <a href="#" class="helper-link">SSO Access</a>
+                </div>
+            </div>
+        
+            <button type="submit" class="submit-btn">
+                Authenticate
+            </button>
+            
+            <div class="success-message" id="successMessage">
+                ✓ Authentication successful
+            </div>
+        </form>
+        
+    </main>
+</body>
+</html>
