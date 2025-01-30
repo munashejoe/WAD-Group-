@@ -23,25 +23,29 @@ app.use(helmet());
 app.use(express.json());
 app.use(express.static('public'));
 
-// Rate limiters (keeping your existing configuration)
+// Import the rateLimit package
+const rateLimit = require('express-rate-limit');
+
+// Global rate limiter configuration
 const globalLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 200,
-  standardHeaders: true,
-  legacyHeaders: false
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 200, // Limit each IP to 200 requests per windowMs
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false // Disable the `X-RateLimit-*` headers
 });
 
+// Registration rate limiter configuration
 const registrationLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000,
-  max: 5,
-  message: { error: 'Too many registration attempts. Try again later.' }
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 5, // Limit each IP to 5 registration attempts per windowMs
+  message: { error: 'Too many registration attempts. Try again later.' }, // Custom error message
 });
 
-const loginLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 10,
-  message: { error: 'Too many login attempts. Try again later.' }
-});
+// Exporting the limiters for use in other parts of the application
+module.exports = {
+  globalLimiter,
+  registrationLimiter
+};
 
 app.use(globalLimiter);
 
