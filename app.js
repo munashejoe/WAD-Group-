@@ -108,31 +108,30 @@ app.post('/api/register',
 );
 
 // Login endpoint
-app.post('/api/login', 
-  loginLimiter,
-  async (req, res) => {
-    try {
-      const { email, password } = req.body;
-      
-      // Find user
-      const user = await User.findOne({ email });
-      
-      if (!user || !(await user.comparePassword(password))) {
-        return res.status(401).json({ 
-          success: false,
-          error: 'Invalid credentials' 
-        });
-      }
+app.post('/api/login', loginLimiter, async (req, res) => {
+  try {
+    const { email, password } = req.body;
 
-      // Update last login
-      user.lastLogin = new Date();
-      await user.save();
+    // Find user
+    const user = await User.findOne({ email });
 
-      const token = jwt.sign(
-        { userId: user._id }, 
-        process.env.JWT_SECRET, 
-        { expiresIn: '1h' }
-      );
+    if (!user || !(await user.comparePassword(password))) {
+      return res.status(401).json({ success: false, error: 'Invalid credentials' });
+    }
+
+    // Update last login
+    user.lastLogin = new Date();
+    await user.save();
+
+    // Generate JWT token
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+    return res.status(200).json({ success: true, token });
+  } catch (error) {
+    console.error('Error during login:', error);
+    return res.status(500).json({ success: false, error: 'An error occurred during login' });
+  }
+});
 
       res.json({
         success: true,
