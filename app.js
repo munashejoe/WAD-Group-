@@ -72,8 +72,7 @@ app.post('/api/register',
           errors: errors.array() 
         });
       }
-
-      const { email, password } = req.body;
+const { email, password } = req.body;
 
       // Check if user exists
       const existingUser = await User.findOne({ email });
@@ -83,6 +82,7 @@ app.post('/api/register',
           error: 'Email already registered' 
         });
       }
+      
 
       // Create new user
       const user = new User({ email, password });
