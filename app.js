@@ -10,7 +10,7 @@ const User = require('./models/User');
 
 const app = express();
 
-// Connect to MongoDB
+// Connect to MongoDB and see
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -27,12 +27,12 @@ app.use(express.static('public'));
 // Global rate limiter configuration
 const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 200, // Limit each IP to 200 requests per windowMs
+  max: 200, // Limit each IP to 200 requests per windowMs and see
   standardHeaders: true,
   legacyHeaders: false
 });
 
-// Registration rate limiter configuration
+// Registration rate limiter configuration and see 
 const registrationLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
   max: 5,
