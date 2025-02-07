@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const rateLimit = require('express-rate-limit');
 const { body, validationResult } = require('express-validator');
 const helmet = require('helmet');
+const bcrypt = require('bcrypt');
 const User = require('./models/User');
 
 const app = express();
@@ -23,29 +24,27 @@ app.use(helmet());
 app.use(express.json());
 app.use(express.static('public'));
 
-// Import the rateLimit package
-const rateLimit = require('express-rate-limit');
-
 // Global rate limiter configuration
 const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 200, // Limit each IP to 200 requests per windowMs
-  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-  legacyHeaders: false // Disable the `X-RateLimit-*` headers
+  standardHeaders: true,
+  legacyHeaders: false
 });
 
 // Registration rate limiter configuration
 const registrationLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
-  max: 5, // Limit each IP to 5 registration attempts per windowMs
-  message: { error: 'Too many registration attempts. Try again later.' }, // Custom error message
+  max: 5,
+  message: { error: 'Too many registration attempts. Try again later.' },
 });
 
-// Exporting the limiters for use in other parts of the application
-module.exports = {
-  globalLimiter,
-  registrationLimiter
-};
+// Login rate limiter configuration
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10,
+  message: { error: 'Too many login attempts. Try again later.' },
+});
 
 app.use(globalLimiter);
 
@@ -84,8 +83,11 @@ app.post('/api/register',
         });
       }
 
+      // Hash password
+      const hashedPassword = await bcrypt.hash(password, 10);
+
       // Create new user
-      const user = new User({ email, password });
+      const user = new User({ email, password: hashedPassword });
       await user.save();
 
       res.status(201).json({
@@ -117,46 +119,8 @@ app.post('/api/login',
       // Find user
       const user = await User.findOne({ email });
       
-      if (!user || !(await user.comparePassword(password))) {
+      if (!user || !(await bcrypt.compare(password, user.password))) {
         return res.status(401).json({ 
           success: false,
           error: 'Invalid credentials' 
         });
-      }
-
-      // Update last login
-      user.lastLogin = new Date();
-      await user.save();
-
-      const token = jwt.sign(
-        { userId: user._id }, 
-        process.env.JWT_SECRET, 
-        { expiresIn: '1h' }
-      );
-
-      res.json({
-        success: true,
-        message: 'Login successful',
-        token,
-        user: {
-          id: user._id,
-          email: user.email
-        }
-      });
-
-    } catch (err) {
-      console.error('Login error:', err);
-      res.status(500).json({ 
-        success: false,
-        error: 'Internal server error' 
-      });
-    }
-  }
-);
-
-
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-});
-
