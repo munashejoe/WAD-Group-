@@ -32,7 +32,7 @@ const globalLimiter = rateLimit({
   legacyHeaders: false
 });
 
-// Registration rate limiter configuration and see 
+// Registration rate limiter configured and see
 const registrationLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
   max: 5,
