@@ -118,9 +118,12 @@ app.post('/api/login',
       
       // Find user
       const user = await User.findOne({ email });
-      
+    
       if (!user || !(await bcrypt.compare(password, user.password))) {
         return res.status(401).json({ 
           success: false,
           error: 'Invalid credentials' 
-        });
+       
+        })
+      }} 
+      });
