@@ -74,7 +74,7 @@ app.post('/api/register',
 
       const { email, password } = req.body;
 
-      // Check if user exists and see
+      // Check if user exists 
       const existingUser = await User.findOne({ email });
       if (existingUser) {
         return res.status(400).json({ 
@@ -83,10 +83,10 @@ app.post('/api/register',
         });
       }
 
-      // Hash password and see
+      // Hash password 
       const hashedPassword = await bcrypt.hash(password, 10);
 
-      // Create new user and see
+      // Create new user 
       const user = new User({ email, password: hashedPassword });
       await user.save();
 
